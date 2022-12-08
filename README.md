@@ -14,6 +14,10 @@ Run per:
 java -jar target/app-...
 ```
 
+# Styleguide
+
+[Google Styleguide](https://google.github.io/styleguide/javaguide.html)
+
 # Problem description
 
 ## DC Tower Elevator Challenge
