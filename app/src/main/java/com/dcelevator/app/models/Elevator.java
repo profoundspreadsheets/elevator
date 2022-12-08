@@ -2,10 +2,6 @@ package com.dcelevator.app.models;
 
 import java.util.UUID;
 
-enum Direction {
-    UP, DOWN
-}
-
 public class Elevator implements Runnable {
     private String id;
     private ElevatorState state;
