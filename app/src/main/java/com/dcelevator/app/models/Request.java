@@ -11,10 +11,11 @@ public class Request {
         this.id = id;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
-        if (currentFloor > destinationFloor) {
+        if (currentFloor == destinationFloor) {
+            throw new IllegalArgumentException(String.format("Request must contain different floors", this.toString()));
+        } else if  (currentFloor > destinationFloor) {
             this.direction = Direction.DOWN;
-        }
-        else {
+        } else {
             this.direction = Direction.UP;
         }
     }
