@@ -1,6 +1,8 @@
 package com.dcelevator.app.models;
 
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class Elevator implements Runnable {
     private String id;
@@ -8,6 +10,8 @@ public class Elevator implements Runnable {
     private Direction direction;
     private int currentFloor;
     private int destinationFloor;
+    // TODO sort after destination Floor ?
+    private BlockingQueue<Request> requestsQueue;
     /*
      * in millisec, how long it takes to go up or down one floor
      * idea is that a moving elevator should pick up passengers
@@ -24,6 +28,7 @@ public class Elevator implements Runnable {
         this.id = id;
         this.state = ElevatorState.IDLE;
         this.direction = Direction.UP;
+        this.requestsQueue = new ArrayBlockingQueue<>(1024);
         this.currentFloor = 0;
         this.destinationFloor = 0;
     }
@@ -74,6 +79,13 @@ public class Elevator implements Runnable {
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
+        while (true) {
+            try {
+                Request request = this.requestsQueue.take();
+                System.out.println(request);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
