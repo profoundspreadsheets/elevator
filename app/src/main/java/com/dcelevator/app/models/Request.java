@@ -3,7 +3,6 @@ package com.dcelevator.app.models;
 import java.util.UUID;
 
 public class Request implements Comparable<Request> {
-    @SuppressWarnings("unused")
     private final String id;
     private final int currentFloor; // from which floor was request entered
     private final int destinationFloor;

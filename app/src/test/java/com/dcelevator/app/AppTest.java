@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.dcelevator.app.models.Direction;
-import com.dcelevator.app.models.Elevator;
-import com.dcelevator.app.models.ElevatorState;
 import com.dcelevator.app.models.Request;
 
 /**
