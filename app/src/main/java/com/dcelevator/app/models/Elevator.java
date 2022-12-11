@@ -9,7 +9,6 @@ public class Elevator implements Runnable {
     private Direction direction;
     private int currentFloor;
     private int destinationFloor;
-    // TODO sort after destination Floor ?
     private PriorityBlockingQueue<Request> requestsQueue;
     /*
      * in millisec, how long it takes to go up or down one floor
@@ -19,15 +18,14 @@ public class Elevator implements Runnable {
      * elevator from 0 -> 20 should pick passenger up from floors
      * 1-19 if elevator has not yet passed the given floor
      */
-    @SuppressWarnings("unused")
-    private int SPEED_PER_REQUEST = 500;
+    private int SPEED_PER_REQUEST = 1000;
 
     public Elevator(String id) {
         // will be used for debugging
         this.id = id;
         this.state = ElevatorState.IDLE;
         this.direction = Direction.UP;
-        this.requestsQueue = new PriorityBlockingQueue<Request>(1024);
+        this.requestsQueue = new PriorityBlockingQueue<Request>(2);
         this.currentFloor = 0;
         this.destinationFloor = 0;
     }
@@ -40,6 +38,46 @@ public class Elevator implements Runnable {
         this.destinationFloor = 0;
     }
 
+    private void moveElevatorToRequested(Request request) {
+        while (this.currentFloor != request.getCurrentFloor()) {
+            switch (Integer.compare(currentFloor, request.getCurrentFloor())) {
+                case -1 -> {
+                    // elevator is under the requested floor
+                    this.direction = Direction.UP;
+                    this.currentFloor += 1;
+                }
+                case 1 -> {
+                    // elevator is above the requested floor
+                    this.direction = Direction.DOWN;
+                    this.currentFloor -= 1;
+                }
+            }
+            System.out.printf("Moved elevator %s to pick up PAX: %s\n", this.id,
+                    this.currentFloor);
+        }
+        request.setState(RequestState.CARRY);
+    }
+
+    private void moveElevatorToDestination(Request request) {
+        while (this.currentFloor != request.getDestinationFloor()) {
+            switch (request.getDirection()) {
+                case UP -> {
+                    this.direction = Direction.UP;
+                    this.currentFloor += 1;
+                    System.out.printf("Moved elevator %s to deliver PAX: %s\n", this.id,
+                            this.currentFloor);
+                }
+                case DOWN -> {
+                    this.direction = Direction.DOWN;
+                    this.currentFloor -= 1;
+                    System.out.printf("Moved elevator %s to deliver PAX: %s\n", this.id,
+                            this.currentFloor);
+                }
+            }
+        }
+        request.setState(RequestState.DELIVERED);
+    }
+
     @Override
     public void run() {
         while (true) {
@@ -47,16 +85,27 @@ public class Elevator implements Runnable {
                 Request request = this.requestsQueue.peek(); // need to keep request if not finished
                 if (request != null) {
                     while (!request.isFinished()) {
-                        System.out.println("Working on Request " + request.toString());
-                        Thread.sleep(SPEED_PER_REQUEST);
-                        this.currentFloor += 1;
-                        System.out.println("Moving elevator to " + this.currentFloor);
-                        if (this.currentFloor == request.getDestinationFloor()) {
-                            System.out.println("Finished Request " + request);
-                            request.setFinished(true);
-                            this.requestsQueue.remove(request);
+                        switch (request.getState()) {
+                            case PICKING -> {
+                                Thread.sleep(SPEED_PER_REQUEST);
+                                moveElevatorToRequested(request);
+                            }
+                            case CARRY -> {
+                                Thread.sleep(SPEED_PER_REQUEST);
+                                moveElevatorToDestination(request);
+                            }
+                            case DELIVERED -> {
+                                System.out.println("Finished Request " + request);
+                                request.setFinished(true);
+                                this.requestsQueue.remove(request);
+                                if (this.requestsQueue.isEmpty()) {
+                                    System.out.printf("Elevator %s now idle.\n", this.id);
+                                    this.state = ElevatorState.IDLE;
+                                }
+                            }
+                            default -> throw new IllegalArgumentException("Unexpected value: " + request.getState());
                         }
-                    }                                        
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -107,6 +156,4 @@ public class Elevator implements Runnable {
     public synchronized PriorityBlockingQueue<Request> getQueue() {
         return this.requestsQueue;
     }
-
-    
 }
