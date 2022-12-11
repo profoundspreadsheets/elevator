@@ -1,5 +1,7 @@
 package com.dcelevator.app.models;
 
+import java.util.UUID;
+
 public class Request implements Comparable<Request> {
     @SuppressWarnings("unused")
     private final String id;
@@ -7,12 +9,29 @@ public class Request implements Comparable<Request> {
     private final int destinationFloor;
     private final Direction direction;
     private boolean finished;
+    private RequestState state;
+
+    public Request(int currentFloor, int destinationFloor) {
+        this.id = UUID.randomUUID().toString();
+        this.currentFloor = currentFloor;
+        this.destinationFloor = destinationFloor;
+        this.finished = false;
+        this.state = RequestState.PICKING;
+        if (currentFloor == destinationFloor) {
+            throw new IllegalArgumentException(String.format("Request must contain different floors", this.toString()));
+        } else if (currentFloor > destinationFloor) {
+            this.direction = Direction.DOWN;
+        } else {
+            this.direction = Direction.UP;
+        }
+    }
 
     public Request(String id, int currentFloor, int destinationFloor) {
         this.id = id;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.finished = false;
+        this.state = RequestState.PICKING;
         if (currentFloor == destinationFloor) {
             throw new IllegalArgumentException(String.format("Request must contain different floors", this.toString()));
         } else if (currentFloor > destinationFloor) {
@@ -24,12 +43,20 @@ public class Request implements Comparable<Request> {
 
     @Override
     public String toString() {
-        return "Request [id=" + id + ", requested on: " + currentFloor + ", destination: " + destinationFloor
-                + ", direction=" + direction + "]";
+        return "[id=" + id + ", requested on: " + currentFloor + ", destination: " + destinationFloor
+                + ", direction=" + direction + "]\n";
     }
 
     public void setFinished(boolean finished) {
         this.finished = finished;
+    }
+
+    public void setState(RequestState requestState) {
+        this.state = requestState;
+    }
+
+    public RequestState getState() {
+        return this.state;
     }
 
     public boolean isFinished() {
@@ -54,7 +81,6 @@ public class Request implements Comparable<Request> {
 
     @Override
     public int compareTo(Request arg0) {
-        // TODO Auto-generated method stub
         switch (this.direction) {
             case DOWN:
                 return (-1) * Integer.compare(this.destinationFloor, arg0.destinationFloor);

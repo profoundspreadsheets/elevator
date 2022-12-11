@@ -1,5 +1,9 @@
 package com.dcelevator.app;
 
+import java.util.Random;
+
+import com.dcelevator.app.models.Request;
+
 /**
  * Hello world!
  *
@@ -8,6 +12,25 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        ElevatorSystem test = new ElevatorSystem();
+        Thread systemThread = new Thread(test);
+        systemThread.start();
+
+        test.addElevator("0");
+        test.addElevator("1");
+        test.addElevator("2");
+        test.addElevator("3");
+        test.addElevator("4");
+
+        Random rng = new Random();
+        for (int i = 0; i <= 30; i++) {
+            final int currentFloor = rng.nextInt(20);
+            final int targetFloor = rng.nextInt(20);
+
+            Request request = new Request(String.valueOf(i), currentFloor, targetFloor);
+            
+            test.addRequest(request);
+            
+        }        
     }
 }
