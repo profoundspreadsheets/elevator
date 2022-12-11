@@ -13,8 +13,7 @@ public class App
     public static void main( String[] args )
     {
         ElevatorSystem test = new ElevatorSystem();
-        Thread systemThread = new Thread(test);
-        systemThread.start();
+        
 
         test.addElevator("0");
         test.addElevator("1");
@@ -23,6 +22,10 @@ public class App
         test.addElevator("4");
 
         Random rng = new Random();
+        rng.setSeed(50);
+
+        System.out.println("============================ START ============================");
+
         for (int i = 0; i <= 30; i++) {
             final int currentFloor = rng.nextInt(20);
             final int targetFloor = rng.nextInt(20);
@@ -30,7 +33,9 @@ public class App
             Request request = new Request(String.valueOf(i), currentFloor, targetFloor);
             
             test.addRequest(request);
-            
         }        
+        System.out.println(test.getQueue());
+        Thread systemThread = new Thread(test);
+        systemThread.start();
     }
 }

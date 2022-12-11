@@ -33,19 +33,25 @@ public class ElevatorSystem implements Runnable {
     }
 
     public Elevator getUsableElevatorForRequest(Request request) {
-        if (getClosestIdleElevator(request) != null) {
-            Elevator elevator = getClosestIdleElevator(request);
-            System.out.printf("Closest Elevator %s for Request %s", elevator, request);
+        
+        // check if moving elevator can catch
+        // check if idle elevator is available
+        // move request into queue
+
+        if (getClosestMovingElevator(request) != null) {
+            Elevator elevator = getClosestMovingElevator(request);
+            System.out.printf("Closest %s for Request %s", elevator, request);
             return elevator;
         }
 
-        if (getClosestMovingElevator(request) != null){
-            Elevator elevator = getClosestMovingElevator(request);
-            System.out.printf("Closest Elevator %s for Request %s", elevator, request);
+        if (getClosestIdleElevator(request) != null) {
+            Elevator elevator = getClosestIdleElevator(request);
+            System.out.printf("Closest %s for Request %s", elevator, request);
             return elevator;
         }
-        
-        System.out.println("FOUND NO SUITABLE ELEVATOR");
+
+        System.out.printf("FOUND NO SUITABLE ELEVATOR");
+        this.requestQueue.add(request);
         return null;
     }
 
@@ -72,14 +78,11 @@ public class ElevatorSystem implements Runnable {
 
     @Override
     public void run() {
-        // check if moving elevator can catch
-        // check if idle elevator is available
-        // move request into queue
         while (true) {
             try {
-                Thread.sleep(2000);
-                Request request = this.requestQueue.take();   
-                System.out.println("Working on Request " + request.toString());          
+                Thread.sleep(1000);
+                Request request = this.requestQueue.take();
+                System.out.printf("Working on Request %s", request);
                 this.workRequest(request);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -95,7 +95,7 @@ public class Elevator implements Runnable {
                                 moveElevatorToDestination(request);
                             }
                             case DELIVERED -> {
-                                System.out.println("Finished Request " + request);
+                                System.out.printf("Finished Request %s", request);
                                 request.setFinished(true);
                                 this.requestsQueue.remove(request);
                                 if (this.requestsQueue.isEmpty()) {
@@ -149,11 +149,17 @@ public class Elevator implements Runnable {
         return this.currentFloor;
     }
 
+    @Override
+    public String toString() {
+        return "Elevator [id=" + id + ", state=" + state + ", direction=" + direction + ", currentFloor=" + currentFloor
+                + ", requestsQueue=" + requestsQueue + "]";
+    }
+
     public int getDestinationFloor() {
         return this.destinationFloor;
     }
 
-    public synchronized PriorityBlockingQueue<Request> getQueue() {
+    public PriorityBlockingQueue<Request> getQueue() {
         return this.requestsQueue;
     }
 }
