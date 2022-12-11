@@ -3,6 +3,7 @@ package com.dcelevator.app;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -49,6 +50,11 @@ public class ElevatorSystem implements Runnable {
                 .orElse(null);
     }
 
+    private void workRequest(Request request) {
+        Elevator elevator = getUsableElevatorForRequest(request);
+        elevator.getQueue().offer(request);
+    }
+
     @Override
     public void run() {
         // check if moving elevator can catch
@@ -56,7 +62,9 @@ public class ElevatorSystem implements Runnable {
         // move request into queue
         while (true) {
             try {
-                Request request = this.requestQueue.take();
+                Thread.sleep(8000);
+                Request request = this.requestQueue.take();             
+                this.workRequest(request);
             } catch (Exception e) {
                 e.printStackTrace();
             }
