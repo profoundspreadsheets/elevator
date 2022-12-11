@@ -3,7 +3,6 @@ package com.dcelevator.app;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -18,7 +17,14 @@ public class ElevatorSystem implements Runnable {
     private final List<Elevator> elevators = new ArrayList<>();
     private final BlockingQueue<Request> requestQueue = new ArrayBlockingQueue<>(1024);
 
+    public void addElevator(String id) {
+        Elevator elevator = new Elevator(id);
+        new Thread(elevator).start();
+        this.elevators.add(elevator);
+    }
+
     public void addElevator(Elevator elevator) {
+        new Thread(elevator).start();
         this.elevators.add(elevator);
     }
 
@@ -27,11 +33,20 @@ public class ElevatorSystem implements Runnable {
     }
 
     public Elevator getUsableElevatorForRequest(Request request) {
-        if (getClosestMovingElevator(request) != null) {
-            return getClosestMovingElevator(request);
-        } else {
-            return getClosestIdleElevator(request);
-        }        
+        if (getClosestIdleElevator(request) != null) {
+            Elevator elevator = getClosestIdleElevator(request);
+            System.out.printf("Closest Elevator %s for Request %s", elevator, request);
+            return elevator;
+        }
+
+        if (getClosestMovingElevator(request) != null){
+            Elevator elevator = getClosestMovingElevator(request);
+            System.out.printf("Closest Elevator %s for Request %s", elevator, request);
+            return elevator;
+        }
+        
+        System.out.println("FOUND NO SUITABLE ELEVATOR");
+        return null;
     }
 
     private Elevator getClosestMovingElevator(Request request) {
@@ -62,8 +77,9 @@ public class ElevatorSystem implements Runnable {
         // move request into queue
         while (true) {
             try {
-                Thread.sleep(8000);
-                Request request = this.requestQueue.take();             
+                Thread.sleep(2000);
+                Request request = this.requestQueue.take();   
+                System.out.println("Working on Request " + request.toString());          
                 this.workRequest(request);
             } catch (Exception e) {
                 e.printStackTrace();
