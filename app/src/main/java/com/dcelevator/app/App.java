@@ -4,10 +4,6 @@ import java.util.Random;
 
 import com.dcelevator.app.models.Request;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
     public static void main( String[] args )

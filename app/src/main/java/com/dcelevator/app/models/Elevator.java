@@ -10,14 +10,6 @@ public class Elevator implements Runnable {
     private int currentFloor;
     private int destinationFloor;
     private PriorityBlockingQueue<Request> requestsQueue;
-    /*
-     * in millisec, how long it takes to go up or down one floor
-     * idea is that a moving elevator should pick up passengers
-     * in intermediate floors
-     * 
-     * elevator from 0 -> 20 should pick passenger up from floors
-     * 1-19 if elevator has not yet passed the given floor
-     */
     private int SPEED_PER_REQUEST = 1000;
 
     public Elevator(String id) {

@@ -14,6 +14,8 @@ Run per:
 java -jar target/app-...
 ```
 
+In der Main in App.java ist der Showcase implementiert. Das Programm dumpt die Lifte in die Konsole, wenn fertig mit Strg+C wieder stoppen :).
+
 # Styleguide
 
 [Google Styleguide](https://google.github.io/styleguide/javaguide.html)
